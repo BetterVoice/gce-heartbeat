@@ -101,6 +101,8 @@ class HeartBeat(object):
                                           self.primary_zone,
                                           self.pri_nic['accessConfigs'][0]['name'],
                                           self.pri_nic['name'])
+          address = self.__get_address__(self.project, self.region,
+                                         self.address_name)
           self.__add_access_config__(self.project, self.primary, self.primary_zone,
                                      self.pri_nic['name'], address = address['address'])
           self.pri_nic = self.__get_network_interfaces__(self.project,
