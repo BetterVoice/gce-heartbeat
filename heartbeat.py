@@ -85,13 +85,8 @@ class HeartBeat(object):
   def start(self):
     while True:
       try:
-        if self.owner == HeartBeat.Primary:
-          self.__ping__(self.pri_nic['networkIP'], self.interval)
-        elif self.owner == HeartBeat.Secondary:
-          self.pri_nic = self.__get_network_interfaces__(self.project,
-                                                         self.primary,
-                                                         self.primary_zone)[0]
-          self.__ping__(self.pri_nic['networkIP'], self.interval)
+        self.__ping__(self.pri_nic['networkIP'], self.interval)
+        if self.owner == HeartBeat.Secondary:
           # Remove the address from the secondary.
           self.__delete_access_config__(self.project, self.secondary,
                                         self.secondary_zone,
@@ -100,6 +95,9 @@ class HeartBeat(object):
           self.__add_access_config__(self.project, self.secondary, self.secondary_zone,
                                      self.sec_nic['name'])
           # Assign the address to the primary.
+          self.pri_nic = self.__get_network_interfaces__(self.project,
+                                                         self.primary,
+                                                         self.primary_zone)[0]
           if len(self.pri_nic['accessConfigs']) > 0:
             self.__delete_access_config__(self.project, self.primary,
                                           self.primary_zone,
