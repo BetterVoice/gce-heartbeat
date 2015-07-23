@@ -9,13 +9,9 @@ import os
 import time
 
 class HeartBeat(object):
-  Primary = 0
-  Secondary = 1
-
   def __init__(self, *args, **kwargs):
     self.credentials = GoogleCredentials.get_application_default()
     self.compute = build('compute', 'v1', credentials = self.credentials)
-    self.owner = HeartBeat.Primary
     self.interval = kwargs['interval'][0]
     self.project = kwargs['project'][0]
     self.region = kwargs['region'][0]
@@ -86,57 +82,26 @@ class HeartBeat(object):
     while True:
       try:
         self.__ping__(self.pri_nic['networkIP'], self.interval)
-        if self.owner == HeartBeat.Secondary:
-          # Remove the address from the secondary.
+      except CalledProcessError as error:
+        # Make sure the address is not in use.
+        address = self.__get_address__(self.project, self.region,
+                                       self.address_name)
+        if address['status'] == 'IN_USE':
+          self.__delete_access_config__(self.project, self.primary,
+                                        self.primary_zone,
+                                        self.pri_nic['accessConfigs'][0]['name'],
+                                        self.pri_nic['name'])
+        # Assign the address to the secondary.
+        if len(self.sec_nic['accessConfigs']) > 0:
           self.__delete_access_config__(self.project, self.secondary,
                                         self.secondary_zone,
                                         self.sec_nic['accessConfigs'][0]['name'],
                                         self.sec_nic['name'])
-          self.__add_access_config__(self.project, self.secondary, self.secondary_zone,
-                                     self.sec_nic['name'])
-          # Assign the address to the primary.
-          self.pri_nic = self.__get_network_interfaces__(self.project,
-                                                         self.primary,
-                                                         self.primary_zone)[0]
-          if len(self.pri_nic['accessConfigs']) > 0:
-            self.__delete_access_config__(self.project, self.primary,
-                                          self.primary_zone,
-                                          self.pri_nic['accessConfigs'][0]['name'],
-                                          self.pri_nic['name'])
-          address = self.__get_address__(self.project, self.region,
-                                         self.address_name)
-          self.__add_access_config__(self.project, self.primary, self.primary_zone,
-                                     self.pri_nic['name'], address = address['address'])
-          self.pri_nic = self.__get_network_interfaces__(self.project,
-                                                         self.primary,
-                                                         self.primary_zone)[0]
-          self.sec_nic = self.__get_network_interfaces__(self.project,
-                                                         self.secondary,
-                                                         self.secondary_zone)[0]
-          self.owner = HeartBeat.Primary
-      except CalledProcessError as error:
-        if self.owner == HeartBeat.Primary:
-          # Make sure the address is not in use.
-          address = self.__get_address__(self.project, self.region,
-                                         self.address_name)
-          if address['status'] == 'IN_USE':
-            self.__delete_access_config__(self.project, self.primary,
-                                          self.primary_zone,
-                                          self.pri_nic['accessConfigs'][0]['name'],
-                                          self.pri_nic['name'])
-          # Assign the address to the secondary.
-          if len(self.sec_nic['accessConfigs']) > 0:
-            self.__delete_access_config__(self.project, self.secondary,
-                                          self.secondary_zone,
-                                          self.sec_nic['accessConfigs'][0]['name'],
-                                          self.sec_nic['name'])
-          self.__add_access_config__(self.project, self.secondary, self.secondary_zone,
-                                     self.sec_nic['name'], address = address['address'])
-          self.sec_nic = self.__get_network_interfaces__(self.project,
-                                                         self.secondary,
-                                                         self.secondary_zone)[0]
-          self.owner = HeartBeat.Secondary
-
+        self.__add_access_config__(self.project, self.secondary, self.secondary_zone,
+                                   self.sec_nic['name'], address = address['address'])
+        self.sec_nic = self.__get_network_interfaces__(self.project,
+                                                       self.secondary,
+                                                       self.secondary_zone)[0]
       time.sleep(self.interval)
 
 if __name__ == "__main__":
