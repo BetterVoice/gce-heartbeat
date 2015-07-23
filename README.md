@@ -1,4 +1,5 @@
 # gce-heartbeat
+
 A service to failover a static IP on the Google Compute Engine.
 
 usage: heartbeat.py [-h] --interval INTERVAL --project PROJECT --region REGION
@@ -28,6 +29,17 @@ optional arguments:
 
   --secondary SECONDARY
                         The name of the secondary instance.
-                        
+
   --secondary-zone SECONDARY_ZONE
                         The secondary instance zone.
+
+# gce-hearbeat init script
+
+Open the gce-heartbeat file in your favorite editor and set the variables at the beginning of the file to the proper values. Then follow the instructions below.
+
+```
+$] cp heartbeat.py /usr/local/bin
+$] cp gce-heartbeat /etc/init.d
+$] chmod +x /etc/init.d/gce-heartbeat
+$] update-rc.d -f gce-heartbeat defaults
+```
