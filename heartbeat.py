@@ -48,7 +48,6 @@ class HeartBeat(object):
                                   body = body).execute()
     if 'error' in result:
       raise Exception(result['error'])
-    time.sleep(1)
 
   def __delete_access_config__(self, project, instance, zone, access_config_name,
                              nic_name):
@@ -61,7 +60,8 @@ class HeartBeat(object):
                                      networkInterface = nic_name).execute()
     if 'error' in result:
       raise Exception(result['error'])
-    time.sleep(1)
+    # GCE doesn't like addAccessConfig immediately after deleteAccessConfig
+    time.sleep(5)
 
   def __get_address__(self, project, region, address_name):
     result = self.compute.addresses().get(address = address_name,
