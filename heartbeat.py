@@ -111,6 +111,7 @@ class HeartBeat(object):
           self.sec_nic = self.__get_network_interfaces__(self.project,
                                                          self.secondary,
                                                          self.secondary_zone)[0]
+          self.owner = HeartBeat.Primary
       except CalledProcessError as error:
         if self.owner == HeartBeat.Primary:
           # Make sure the address is not in use.
