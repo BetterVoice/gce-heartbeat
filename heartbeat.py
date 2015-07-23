@@ -45,7 +45,7 @@ class HeartBeat(object):
                                   instance = instance,
                                   zone = zone,
                                   networkInterface = nic_name,
-                                  body = body)
+                                  body = body).execute()
     if 'error' in result:
       raise Exception(result['error'])
 
@@ -57,7 +57,7 @@ class HeartBeat(object):
                                      instance = instance,
                                      zone = zone,
                                      accessConfig = access_config_name,
-                                     networkInterface = nic_name)
+                                     networkInterface = nic_name).execute()
     if 'error' in result:
       raise Exception(result['error'])
 
@@ -83,7 +83,7 @@ class HeartBeat(object):
   def start(self):
     while True:
       try:
-        self.ping(self.pri_nic['networkIP'], self.interval)
+        self.__ping__(self.pri_nic['networkIP'], self.interval)
         if self.owner == HeartBeat.Secondary:
           # Remove the address from the secondary.
           self.__delete_access_config__(self.project, self.secondary,
@@ -135,7 +135,7 @@ class HeartBeat(object):
                                                          self.secondary_zone)[0]
           self.owner = HeartBeat.Secondary
 
-      time.sleep(interval)
+      time.sleep(self.interval)
 
 if __name__ == "__main__":
   parser = ArgumentParser(description = 'Establish a heartbeat between two ' +
