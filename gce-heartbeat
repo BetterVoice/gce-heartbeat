@@ -15,9 +15,13 @@ REGION=
 SECONDARY=
 SECONDARY_ZONE=
 ADDRESS_NAME=
+DB=
+DB_USER=
+DB_PASSWORD=
+DB_DIR=
 
 DAEMON="/usr/local/bin/heartbeat.py"
-DAEMON_ARGS="--interval $INTERVAL --project $PROJECT --primary $PRIMARY --primary-zone $PRIMARY_ZONE --region $REGION --secondary $SECONDARY --secondary-zone $SECONDARY_ZONE --address-name $ADDRESS_NAME"
+DAEMON_ARGS="--interval $INTERVAL --project $PROJECT --primary $PRIMARY --primary-zone $PRIMARY_ZONE --region $REGION --secondary $SECONDARY --secondary-zone $SECONDARY_ZONE --address-name $ADDRESS_NAME --db $DB --db-user $DB_USER --db-password $DB_PASSWORD --db-dir $DB_DIR"
 NAME="gce-heartbeat"
 DESC="gce-heartbeat"
 
