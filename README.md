@@ -6,7 +6,9 @@ Is a simple service used to have a secondary instace on the Google Compute Engin
 Open the gce-heartbeat file in your favorite editor and set the variables at the beginning of the file to the proper values. Then execute the commands listed below.
 
 ```
-$] pip install --upgrade google-api-python-client
+$] sudo apt-get install libpq-dev python-dev
+$] pip install psycopg2
+$] pip install google-api-python-client
 $] cp heartbeat.py /usr/local/bin
 $] cp gce-heartbeat /etc/init.d
 $] chmod +x /etc/init.d/gce-heartbeat
